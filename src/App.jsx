@@ -438,18 +438,33 @@ function LogoBreak() {
    SPLASH SCREEN
 ───────────────────────────────────────────── */
 function SplashScreen({ isFadingOut }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setIsLoaded(true);
+    }
+  }, []);
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center transition-opacity duration-500 ${isFadingOut ? 'opacity-0' : 'opacity-100'} z-[999999]`}
       style={{
-        background: '#279cc9', // Fodd Blue
+        background: isLoaded ? '#279cc9' : '#ffffff', // White until image fully loads, then switch instantly to Fodd Blue
         pointerEvents: isFadingOut ? 'none' : 'auto',
       }}
     >
       <img
+        ref={imgRef}
         src="/assets/FoddLogoTransparent.png"
         alt="Fodd Logo"
-        style={{ height: '180px', width: 'auto' }}
+        onLoad={() => setIsLoaded(true)}
+        style={{ 
+          height: '180px', 
+          width: 'auto',
+          opacity: isLoaded ? 1 : 0
+        }}
       />
     </div>
   )
