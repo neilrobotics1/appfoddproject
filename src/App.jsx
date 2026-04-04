@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { ArrowRight, Check, Scan, Users, Sparkles, ArrowDown } from 'lucide-react'
+import { ArrowRight, Check, Scan, Users, Sparkles, ArrowDown, Menu, X } from 'lucide-react'
 import { AUDIENCE_PROFILES } from '../audience_profiles.js'
 
 const FODD_BLUE = '#279cc9'
@@ -153,6 +153,7 @@ function GlowText({ text, containerRef, baseColor = BASE_COLOR, glowColor = EGG_
 ───────────────────────────────────────────── */
 function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => {
@@ -167,95 +168,83 @@ function Navbar() {
     }
   }, [])
 
-  return (
-    <nav
-      className="px-6"
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0,
-        zIndex: 100,
-        height: '84px',
-        background: '#ffffff',
-        borderBottom: isScrolled ? '1px solid rgba(0,0,0,0.08)' : '1px solid transparent',
-        boxShadow: isScrolled ? '0 4px 20px rgba(0,0,0,0.03)' : 'none',
-        transition: 'all 0.3s ease',
+  const NavLink = ({ href, children, isMobile, onClick }) => (
+    <a
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        setMobileMenuOpen(false);
+        if (href === '#') window.scrollTo({ top: 0, behavior: 'smooth' });
+        else document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+        if (onClick) onClick();
       }}
+      style={{
+        fontSize: isMobile ? '1.125rem' : '0.925rem',
+        fontWeight: 700,
+        color: '#111827',
+        textDecoration: 'none',
+        fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
+        letterSpacing: '-0.01em',
+        transition: 'color 0.2s ease',
+      }}
+      onMouseOver={(e) => (e.target.style.color = FODD_BLUE)}
+      onMouseOut={(e) => (e.target.style.color = '#111827')}
     >
-      <div className="max-w-6xl mx-auto w-full h-full flex items-center relative">
-        {/* Left: Logo (Aligned with hero text below) */}
-        <div className="flex-none" style={{ marginLeft: '-17px' }}>
-          <img
-            src="/assets/FoddLogoTransparentBlack.png"
-            alt="Fodd"
-            style={{ height: '146px', width: 'auto', transform: 'translateY(2px)' }}
-          />
-        </div>
+      {children}
+    </a>
+  );
 
-        {/* Right Nav Links */}
-        <div className="absolute right-[-100px] top-1/2 -translate-y-1/2 flex items-center justify-center gap-10">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            style={{
-              fontSize: '0.925rem',
-              fontWeight: 700,
-              color: '#111827',
-              textDecoration: 'none',
-              fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
-              letterSpacing: '-0.01em',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseOver={(e) => (e.target.style.color = FODD_BLUE)}
-            onMouseOut={(e) => (e.target.style.color = '#111827')}
-          >
-            Home
-          </a>
-          <a
-            href="#hero-section"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('hero-section')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            style={{
-              fontSize: '0.925rem',
-              fontWeight: 700,
-              color: '#111827',
-              textDecoration: 'none',
-              fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
-              letterSpacing: '-0.01em',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseOver={(e) => (e.target.style.color = FODD_BLUE)}
-            onMouseOut={(e) => (e.target.style.color = '#111827')}
-          >
-            Join the Waitlist
-          </a>
-          <a
-            href="#features-section"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            style={{
-              fontSize: '0.925rem',
-              fontWeight: 700,
-              color: '#111827',
-              textDecoration: 'none',
-              fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
-              letterSpacing: '-0.01em',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseOver={(e) => (e.target.style.color = FODD_BLUE)}
-            onMouseOut={(e) => (e.target.style.color = '#111827')}
-          >
-            App Features
-          </a>
+  return (
+    <>
+      <nav
+        className="px-6"
+        style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0,
+          zIndex: 100,
+          height: '84px',
+          background: '#ffffff',
+          borderBottom: isScrolled ? '1px solid rgba(0,0,0,0.08)' : '1px solid transparent',
+          boxShadow: isScrolled ? '0 4px 20px rgba(0,0,0,0.03)' : 'none',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        <div className="max-w-6xl mx-auto w-full h-full flex items-center justify-between md:justify-start relative">
+          {/* Left: Logo (Aligned with hero text below) */}
+          <div className="flex-none" style={{ marginLeft: '-17px' }}>
+            <img
+              src="/assets/FoddLogoTransparentBlack.png"
+              alt="Fodd"
+              style={{ height: '146px', width: 'auto', transform: 'translateY(2px)' }}
+            />
+          </div>
+
+          {/* Right Nav Links */}
+          <div className="hidden md:flex absolute right-[0px] top-1/2 -translate-y-1/2 items-center justify-center gap-10">
+            <NavLink href="#">Home</NavLink>
+            <NavLink href="#hero-section">Join the Waitlist</NavLink>
+            <NavLink href="#features-section">App Features</NavLink>
+          </div>
+
+          {/* Mobile Hamburger Toggle */}
+          <div className="md:hidden flex items-center z-[110]">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 -mr-2 text-black transition-transform active:scale-95">
+              {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
+      </nav>
+
+      {/* Mobile Menu Dropdown */}
+      <div
+        className={`md:hidden fixed top-[84px] left-0 w-full bg-white border-b border-black/5 shadow-2xl z-[90] flex flex-col items-center py-8 gap-8 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-y-0' : '-translate-y-[150%]'} shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)]`}
+        style={{ pointerEvents: mobileMenuOpen ? 'auto' : 'none' }}
+      >
+        <NavLink href="#" isMobile>Home</NavLink>
+        <NavLink href="#hero-section" isMobile>Join the Waitlist</NavLink>
+        <NavLink href="#features-section" isMobile>App Features</NavLink>
       </div>
-    </nav>
+    </>
   )
 }
 
@@ -296,18 +285,15 @@ function Hero() {
           {/* Motto */}
           <p
             ref={mottoRef}
-            className="tracking-tight"
+            className="tracking-tight px-[20px] -mx-[20px] md:px-[120px] md:-mx-[120px] py-[20px] -my-[20px] md:py-[40px] md:-my-[40px]"
             style={{
               fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
               fontWeight: 700,
-              fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+              fontSize: 'clamp(2rem, 8vw, 2.5rem)',
               color: '#000000',
-              lineHeight: 1.2,
+              lineHeight: 1.1,
               cursor: 'default',
               userSelect: 'none',
-              // Extra hit-box padding for the mousemove effect previously on the span
-              padding: '40px 120px',
-              margin: '-40px -120px',
             }}
           >
             <GlowText text="Know what food is" containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
@@ -460,8 +446,8 @@ function SplashScreen({ isFadingOut }) {
         src="/assets/FoddLogoTransparent.png"
         alt="Fodd Logo"
         onLoad={() => setIsLoaded(true)}
-        style={{ 
-          height: '180px', 
+        style={{
+          height: '180px',
           width: 'auto',
           opacity: isLoaded ? 1 : 0
         }}
@@ -663,39 +649,42 @@ function AudienceSection() {
         <div ref={bannerRef} className="z-10 w-full flex justify-center mb-24 md:mb-32">
           <div
             key={bannerRevealed ? 'visible' : 'hidden'}
-            className="text-center px-4 flex flex-row justify-center items-baseline"
+            className="text-center px-4 flex flex-row flex-wrap justify-center items-baseline gap-y-3"
             style={{
               fontWeight: 900,
-              fontSize: 'clamp(2.5rem, 6.5vw, 4.5rem)',
-              lineHeight: 1,
-              WebkitTextStroke: '3px black',
-              textShadow: '6px 6px 0 #000000',
+              fontSize: 'clamp(1.2rem, 7vw, 4.5rem)',
+              lineHeight: 1.2,
+              WebkitTextStroke: 'calc(1px + 0.25vw) black',
+              textShadow: 'calc(2px + 0.4vw) calc(2px + 0.4vw) 0 #000000',
               willChange: 'transform, opacity',
-              letterSpacing: '0.15em',
+              letterSpacing: '0.1em',
               animation: bannerRevealed ? 'spreadOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' : 'none',
               opacity: bannerRevealed ? 1 : 0,
-              paddingLeft: '0.15em',
             }}
           >
-            {"OR ANYONE ELSE!".split('').map((char, i) => {
-              const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
-              const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
+            {"OR ANYONE ELSE!".split(' ').map((word, wIdx) => (
+              <span key={wIdx} style={{ display: 'inline-block', whiteSpace: 'nowrap', margin: wIdx > 0 ? '0 0.35em' : '0' }}>
+                {word.split('').map((char, cIdx) => {
+                  const i = wIdx === 0 ? cIdx : (wIdx === 1 ? cIdx + 3 : cIdx + 10);
+                  const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
+                  const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
 
-              let customStyle = { color: colors[i], fontFamily: fonts[i] };
-              if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
-              if (char === ' ') customStyle.margin = '0 0.35em'; // Expand spaces strictly between words
+                  let customStyle = { color: colors[i], fontFamily: fonts[i] };
+                  if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
 
-              if (bannerRevealed) {
-                customStyle.display = 'inline-block';
-                customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
-              }
+                  if (bannerRevealed) {
+                    customStyle.display = 'inline-block';
+                    customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
+                  }
 
-              return (
-                <span key={i} style={customStyle}>
-                  {char === ' ' ? '\u00A0' : char}
-                </span>
-              );
-            })}
+                  return (
+                    <span key={cIdx} style={customStyle}>
+                      {char}
+                    </span>
+                  );
+                })}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -802,6 +791,7 @@ function CustomScrollbar() {
   return (
     <div
       ref={trackRef}
+      className="hidden md:block"
       style={{
         position: 'fixed',
         top: '96px',
