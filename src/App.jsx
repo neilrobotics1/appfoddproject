@@ -673,6 +673,13 @@ function AudienceSection() {
                 textShadow: '8px 8px 0 #000000',
                 willChange: 'transform, opacity',
                 animation: 'popReveal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                WebkitTextFillColor: '#ffffff',
+                transformStyle: 'preserve-3d',
+                WebkitTransformStyle: 'preserve-3d',
+                transform: 'translateZ(0)',
+                WebkitTransform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
               }}
             >
               {profile}
@@ -698,42 +705,39 @@ function AudienceSection() {
         <div ref={bannerRef} className="z-10 w-full flex justify-center mb-24 md:mb-32">
           <div
             key={bannerRevealed ? 'visible' : 'hidden'}
-            className="text-center px-4 flex flex-row flex-wrap justify-center items-baseline gap-y-3"
+            className="text-center px-4 flex flex-row justify-center items-baseline"
             style={{
               fontWeight: 900,
-              fontSize: 'clamp(1.2rem, 7vw, 4.5rem)',
-              lineHeight: 1.2,
-              WebkitTextStroke: 'calc(1px + 0.25vw) black',
-              textShadow: 'calc(2px + 0.4vw) calc(2px + 0.4vw) 0 #000000',
+              fontSize: 'clamp(2.5rem, 6.5vw, 4.5rem)',
+              lineHeight: 1,
+              WebkitTextStroke: '3px black',
+              textShadow: '6px 6px 0 #000000',
               willChange: 'transform, opacity',
-              letterSpacing: '0.1em',
+              letterSpacing: '0.15em',
               animation: bannerRevealed ? 'spreadOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' : 'none',
               opacity: bannerRevealed ? 1 : 0,
+              paddingLeft: '0.15em',
             }}
           >
-            {"OR ANYONE ELSE!".split(' ').map((word, wIdx) => (
-              <span key={wIdx} style={{ display: 'inline-block', whiteSpace: 'nowrap', margin: wIdx > 0 ? '0 0.35em' : '0' }}>
-                {word.split('').map((char, cIdx) => {
-                  const i = wIdx === 0 ? cIdx : (wIdx === 1 ? cIdx + 3 : cIdx + 10);
-                  const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
-                  const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
+            {"OR ANYONE ELSE!".split('').map((char, i) => {
+              const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
+              const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
 
-                  let customStyle = { color: colors[i], fontFamily: fonts[i] };
-                  if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
+              let customStyle = { color: colors[i], fontFamily: fonts[i] };
+              if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
+              if (char === ' ') customStyle.margin = '0 0.35em'; // Expand spaces strictly between words
 
-                  if (bannerRevealed) {
-                    customStyle.display = 'inline-block';
-                    customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
-                  }
+              if (bannerRevealed) {
+                customStyle.display = 'inline-block';
+                customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
+              }
 
-                  return (
-                    <span key={cIdx} style={customStyle}>
-                      {char}
-                    </span>
-                  );
-                })}
-              </span>
-            ))}
+              return (
+                <span key={i} style={customStyle}>
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              );
+            })}
           </div>
         </div>
       </div>
