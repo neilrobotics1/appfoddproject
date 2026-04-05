@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { ArrowRight, Check, Scan, Users, Sparkles, ArrowDown, Menu, X } from 'lucide-react'
 import { AUDIENCE_PROFILES } from '../audience_profiles.js'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'https://vdoudevujewbpxiiejvc.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkb3VkZXZ1amV3YnB4aWllanZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDM2NjksImV4cCI6MjA5MDk3OTY2OX0.-2cKo509YvE72Fs6fqIUzwsf3OIAY_9iiGpGj4aPqwE'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 const FODD_BLUE = '#279cc9'
 const EGG_YOLK = '#ffdc52'
@@ -255,20 +260,52 @@ function Hero() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const subtitleRef = useRef(null)
   const mottoRef = useRef(null)
   const youAreaRef = useRef(null)
 
   const hasInput = email.includes('@')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!email || !email.includes('@')) {
+    setIsSubmitting(true)
+    setError('')
+
+    const cleanedEmail = email.trim().toLowerCase()
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!emailRegex.test(cleanedEmail)) {
       setError('Please enter a valid email.')
+      setIsSubmitting(false)
       return
     }
-    setError('')
+
+    const profanityBlocklist = ['shit', 'fuck', 'ass', 'bitch', 'cunt', 'dick', 'pussy', 'whore', 'bastard'];
+    const prefix = cleanedEmail.split('@')[0];
+    if (profanityBlocklist.some(word => prefix.includes(word))) {
+      setError('Please use a valid professional email.')
+      setIsSubmitting(false)
+      return
+    }
+
+    const { error: dbError } = await supabase
+      .from('waitlist')
+      .insert([{ email: cleanedEmail }])
+
+    if (dbError) {
+      if (dbError.code === '23505') {
+        setError('You are already registered! Check your inbox soon.')
+      } else {
+        setError('An error occurred. Please try again.')
+      }
+      setIsSubmitting(false)
+      return
+    }
+
     setSubmitted(true)
+    setIsSubmitting(false)
+    setEmail('')
   }
 
   return (
@@ -368,16 +405,28 @@ function Hero() {
                 />
                 <button
                   type="submit"
-                  disabled={!hasInput}
+                  disabled={!hasInput || isSubmitting}
                   className="group inline-flex items-center justify-center gap-2 font-semibold text-sm px-6 py-3.5 rounded-2xl whitespace-nowrap transition-all duration-200"
                   style={{
-                    background: hasInput ? FODD_BLUE : '#d1d5db',
+                    background: (hasInput && !isSubmitting) ? FODD_BLUE : '#d1d5db',
                     color: '#ffffff',
-                    cursor: hasInput ? 'pointer' : 'not-allowed',
-                    boxShadow: hasInput ? `0 4px 14px ${FODD_BLUE}50` : 'none',
+                    cursor: (hasInput && !isSubmitting) ? 'pointer' : 'not-allowed',
+                    boxShadow: (hasInput && !isSubmitting) ? `0 4px 14px ${FODD_BLUE}50` : 'none',
                   }}
                 >
-                  Join Waitlist <ArrowRight size={15} className={hasInput ? "transition-colors duration-200 group-hover:text-[#ffdc52]" : ""} />
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                       <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                       </svg>
+                       Joining...
+                    </span>
+                  ) : (
+                    <>
+                      Join Waitlist <ArrowRight size={15} className={hasInput ? "transition-colors duration-200 group-hover:text-[#ffdc52]" : ""} />
+                    </>
+                  )}
                 </button>
               </form>
               {error && <p className="text-red-500 text-xs">{error}</p>}
