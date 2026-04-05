@@ -665,14 +665,13 @@ function AudienceSection() {
               className="text-center px-4"
               style={{
                 color: '#ffffff',
-                WebkitTextFillColor: '#ffffff',
                 fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
                 fontWeight: 900,
                 fontSize: 'clamp(3.2rem, 6.5vw, 6.5rem)',
                 lineHeight: 1.1,
                 WebkitTextStroke: '3px black',
-                paintOrder: 'stroke fill',
                 textShadow: '8px 8px 0 #000000',
+                willChange: 'transform, opacity',
                 animation: 'popReveal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
               }}
             >
@@ -705,8 +704,8 @@ function AudienceSection() {
               fontSize: 'clamp(1.2rem, 7vw, 4.5rem)',
               lineHeight: 1.2,
               WebkitTextStroke: 'calc(1px + 0.25vw) black',
-              paintOrder: 'stroke fill',
               textShadow: 'calc(2px + 0.4vw) calc(2px + 0.4vw) 0 #000000',
+              willChange: 'transform, opacity',
               letterSpacing: '0.1em',
               animation: bannerRevealed ? 'spreadOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' : 'none',
               opacity: bannerRevealed ? 1 : 0,
@@ -719,11 +718,7 @@ function AudienceSection() {
                   const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
                   const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
 
-                  let customStyle = { 
-                    color: colors[i], 
-                    WebkitTextFillColor: colors[i], 
-                    fontFamily: fonts[i] 
-                  };
+                  let customStyle = { color: colors[i], fontFamily: fonts[i] };
                   if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
 
                   if (bannerRevealed) {
