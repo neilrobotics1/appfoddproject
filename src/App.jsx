@@ -664,20 +664,25 @@ function AudienceSection() {
             <div
               className="text-center px-4 max-w-full overflow-visible"
               style={{
-                color: '#ffffff',
-                fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
-                fontWeight: 900,
-                fontSize: 'clamp(3.2rem, 6.5vw, 6.5rem)',
-                lineHeight: 1.1,
-                WebkitTextStroke: '0.03em black',
-                textShadow: '0.08em 0.08em 0 #000000',
                 animation: 'popReveal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                WebkitFontSmoothing: 'antialiased',
                 padding: '0.2em',
                 margin: '-0.2em',
               }}
             >
-              {profile}
+              <div
+                style={{
+                  color: '#ffffff',
+                  fontFamily: '"Planc Bold Black", "Arial Black", Arial-BoldMT, system-ui, -apple-system, sans-serif',
+                  fontWeight: 900,
+                  fontSize: 'clamp(3.2rem, 6.5vw, 6.5rem)',
+                  lineHeight: 1.1,
+                  WebkitTextStroke: '0.03em black',
+                  textShadow: '0.08em 0.08em 0 #000000',
+                  WebkitFontSmoothing: 'antialiased',
+                }}
+              >
+                {profile}
+              </div>
             </div>
           )}
         </div>
@@ -717,7 +722,23 @@ function AudienceSection() {
                 {word.split('').map((char, cIdx) => {
                   const i = wIdx === 0 ? cIdx : (wIdx === 1 ? cIdx + 3 : cIdx + 10);
                   const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
-                  const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
+                  const fonts = [
+                    '"Planc Bold Black", "Arial Black", Arial-BoldMT, system-ui, sans-serif', 
+                    '"Arial Black", Arial-BoldMT, sans-serif', 
+                    'inherit', 
+                    '"Fredoka One", "Arial Rounded MT Bold", sans-serif', 
+                    '"Planc Bold Black", "Arial Black", Arial-BoldMT, system-ui, sans-serif', 
+                    '"Trebuchet MS", "Helvetica Neue", sans-serif', 
+                    '"Impact", "Arial Black", Arial-BoldMT, sans-serif', 
+                    '"Arial Black", Arial-BoldMT, sans-serif', 
+                    '"Comic Sans MS", "Marker Felt", "Chalkboard SE", cursive', 
+                    'inherit', 
+                    '"Fredoka One", "Arial Rounded MT Bold", sans-serif', 
+                    '"Trebuchet MS", "Helvetica Neue", sans-serif', 
+                    '"Planc Bold Black", "Arial Black", Arial-BoldMT, system-ui, sans-serif', 
+                    '"Arial Black", Arial-BoldMT, sans-serif', 
+                    '"Impact", "Arial Black", Arial-BoldMT, sans-serif'
+                  ];
 
                   let customStyle = { 
                     color: colors[i], 
@@ -728,14 +749,13 @@ function AudienceSection() {
                   };
                   if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
 
-                  if (bannerRevealed) {
-                    customStyle.display = 'inline-block';
-                    customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
-                  }
+                  const animationClass = bannerRevealed ? `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate` : 'none';
 
                   return (
-                    <span key={i} style={customStyle}>
-                      {char}
+                    <span key={i} style={{ display: 'inline-block', animation: animationClass }}>
+                      <span style={{ display: 'inline-block', ...customStyle }}>
+                        {char}
+                      </span>
                     </span>
                   );
                 })}
