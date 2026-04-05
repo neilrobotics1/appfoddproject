@@ -673,7 +673,6 @@ function AudienceSection() {
                 textShadow: '8px 8px 0 #000000',
                 willChange: 'transform, opacity',
                 animation: 'popReveal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                WebkitTextFillColor: '#ffffff',
                 transformStyle: 'preserve-3d',
                 WebkitTransformStyle: 'preserve-3d',
                 transform: 'translateZ(0)',
