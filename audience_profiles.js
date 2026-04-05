@@ -30,7 +30,7 @@ export const AUDIENCE_PROFILES = [
     "Endometriosis Diet", "Kidney Friendly (Renal Diet)", "Low Potassium",
     "Low Phosphorus", "Low Oxalate", "Thyroid Health",
     "AIP (Autoimmune Protocol)", "GAPS Diet", "SCD (Specific Carbohydrate Diet)",
-    "Cholesterol Conscious", "Blood Pressure Friendly", "Gut-Microbiome Focused",
+    "Cholesterol Conscious", "High Cholesterol", "Blood Pressure Friendly", "Gut-Microbiome Focused",
 
     // Religious & Cultural
     "Jain Vegetarian", "Hindu Vegetarian", "Buddhist Diet", "Ital (Rastafarian)",
@@ -61,8 +61,5 @@ export const AUDIENCE_PROFILES = [
     "Keto, Dairy-Free & Nightshade-Free", "Low-FODMAP & Vegetarian",
 
     // Fun / Encouraging Additions
-    "No Drawbacks!", "Eating For Energy", "Gut-Brain Connection",
-    "Hormone Balancing", "Brain Fog Fighters", "Skin-Clear Diet",
-    "Immune-Boosting", "Longevity Focused", "Blue Zone Eaters",
-    "Eat The Rainbow", "No Drawbacks!"
+    "No Drawbacks!", "Eating For Energy", "Low Cortisol", "Gut-Brain Connection", "Hormone Balancing", "Skin-Clear Diet", "Immune-Boosting", "Longevity Focused", "Blue Zone Eaters", "No Drawbacks!"
 ];
