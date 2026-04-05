@@ -662,20 +662,19 @@ function AudienceSection() {
 
           {!isLoading && showResult && profile && (
             <div
-              className="text-center px-4"
+              className="text-center px-4 max-w-full overflow-visible"
               style={{
                 color: '#ffffff',
                 fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
                 fontWeight: 900,
                 fontSize: 'clamp(3.2rem, 6.5vw, 6.5rem)',
                 lineHeight: 1.1,
-                WebkitTextStroke: '3px black',
-                textShadow: '8px 8px 0 #000000',
-                willChange: 'transform, opacity',
+                WebkitTextStroke: '0.03em black',
+                textShadow: '0.08em 0.08em 0 #000000',
                 animation: 'popReveal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
                 WebkitFontSmoothing: 'antialiased',
-                padding: '24px',
-                margin: '-24px',
+                padding: '0.2em',
+                margin: '-0.2em',
               }}
             >
               {profile}
@@ -701,48 +700,47 @@ function AudienceSection() {
         <div ref={bannerRef} className="z-10 w-full flex justify-center mb-24 md:mb-32">
           <div
             key={bannerRevealed ? 'visible' : 'hidden'}
-            className="text-center px-4 flex flex-row justify-center items-baseline"
+            className="text-center px-4 flex flex-row flex-wrap justify-center items-baseline max-w-full gap-y-4"
             style={{
               fontWeight: 900,
               fontSize: 'clamp(2.5rem, 6.5vw, 4.5rem)',
               lineHeight: 1,
-              WebkitTextStroke: '3px black',
-              textShadow: '6px 6px 0 #000000',
-              willChange: 'transform, opacity',
+              WebkitTextStroke: '0.04em black',
+              textShadow: '0.08em 0.08em 0 #000000',
               letterSpacing: '0.15em',
               animation: bannerRevealed ? 'spreadOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' : 'none',
               opacity: bannerRevealed ? 1 : 0,
-              paddingLeft: '0.15em',
             }}
           >
-            {"OR ANYONE ELSE!".split('').map((char, i) => {
-              const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
-              const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
+            {"OR ANYONE ELSE!".split(' ').map((word, wIdx) => (
+              <span key={wIdx} className="whitespace-nowrap flex flex-row" style={{ margin: wIdx > 0 ? '0 0 0 0.35em' : '0' }}>
+                {word.split('').map((char, cIdx) => {
+                  const i = wIdx === 0 ? cIdx : (wIdx === 1 ? cIdx + 3 : cIdx + 10);
+                  const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
+                  const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
 
-              let customStyle = { 
-                color: colors[i], 
-                fontFamily: fonts[i],
-                padding: '0.2em',
-                margin: '-0.2em',
-                WebkitFontSmoothing: 'antialiased'
-              };
-              if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
-              if (char === ' ') {
-                customStyle.padding = '0';
-                customStyle.margin = '0 0.35em'; // Expand spaces strictly between words
-              }
+                  let customStyle = { 
+                    color: colors[i], 
+                    fontFamily: fonts[i],
+                    WebkitFontSmoothing: 'antialiased',
+                    padding: '0.1em',
+                    margin: '-0.1em'
+                  };
+                  if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
 
-              if (bannerRevealed) {
-                customStyle.display = 'inline-block';
-                customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
-              }
+                  if (bannerRevealed) {
+                    customStyle.display = 'inline-block';
+                    customStyle.animation = `idleBob 1.75s ease-in-out ${0.6 + i * 0.08}s infinite alternate`;
+                  }
 
-              return (
-                <span key={i} style={customStyle}>
-                  {char === ' ' ? '\u00A0' : char}
-                </span>
-              );
-            })}
+                  return (
+                    <span key={i} style={customStyle}>
+                      {char}
+                    </span>
+                  );
+                })}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -906,7 +904,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="min-h-screen" style={{ background: '#ffffff' }}>
+    <div className="min-h-screen overflow-x-hidden relative w-full" style={{ background: '#ffffff', maxWidth: '100vw' }}>
       <CustomScrollbar />
       {showSplash && <SplashScreen isFadingOut={isFadingOut} />}
       <Navbar />
