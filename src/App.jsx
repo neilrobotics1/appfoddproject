@@ -673,12 +673,9 @@ function AudienceSection() {
                 textShadow: '8px 8px 0 #000000',
                 willChange: 'transform, opacity',
                 animation: 'popReveal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                transformStyle: 'preserve-3d',
-                WebkitTransformStyle: 'preserve-3d',
-                transform: 'translateZ(0)',
-                WebkitTransform: 'translateZ(0)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
+                WebkitFontSmoothing: 'antialiased',
+                padding: '24px',
+                margin: '-24px',
               }}
             >
               {profile}
@@ -722,9 +719,18 @@ function AudienceSection() {
               const colors = ['#ffdc52', '#ffb3ba', 'transparent', '#bae1ff', '#f3c555', '#baffc9', '#ffdfba', '#ffdc52', '#e2cbff', 'transparent', '#f3c555', '#ffb3ba', '#bae1ff', '#ffdc52', '#baffc9'];
               const fonts = ['"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Trebuchet MS", sans-serif', '"Impact", sans-serif', '"Arial Black", sans-serif', '"Comic Sans MS", cursive', 'inherit', '"Fredoka One", "Arial Rounded MT Bold", sans-serif', '"Trebuchet MS", sans-serif', '"Planc Bold Black", system-ui, sans-serif', '"Arial Black", sans-serif', '"Impact", sans-serif'];
 
-              let customStyle = { color: colors[i], fontFamily: fonts[i] };
+              let customStyle = { 
+                color: colors[i], 
+                fontFamily: fonts[i],
+                padding: '0.2em',
+                margin: '-0.2em',
+                WebkitFontSmoothing: 'antialiased'
+              };
               if (i === 0) customStyle.fontSize = '1.15em'; // Make 'O' bigger
-              if (char === ' ') customStyle.margin = '0 0.35em'; // Expand spaces strictly between words
+              if (char === ' ') {
+                customStyle.padding = '0';
+                customStyle.margin = '0 0.35em'; // Expand spaces strictly between words
+              }
 
               if (bannerRevealed) {
                 customStyle.display = 'inline-block';
