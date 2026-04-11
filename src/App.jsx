@@ -27,6 +27,14 @@ if (typeof document !== 'undefined') {
       from { transform: translate3d(0, 0px, 0); }
       to { transform: translate3d(0, -6px, 0); }
     }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes marquee-reverse {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
     
     ::-webkit-scrollbar {
       display: none;
@@ -508,9 +516,22 @@ function SplashScreen({ isFadingOut }) {
 /* ─────────────────────────────────────────────
    FEATURES SECTION
 ───────────────────────────────────────────── */
+function FloatingShapes() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+      {/* Top Left Wavy Lines */}
+      <svg className="absolute top-[5%] left-[-2%] w-32 h-32 md:w-48 md:h-48 text-[#f3c555] opacity-70" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M0,20 Q10,10 20,20 T40,20 T60,20 T80,20 T100,20" />
+        <path d="M0,35 Q10,25 20,35 T40,35 T60,35 T80,35 T100,35" />
+        <path d="M0,50 Q10,40 20,50 T40,50 T60,50 T80,50 T100,50" />
+        <path d="M0,65 Q10,55 20,65 T40,65 T60,65 T80,65 T100,65" />
+      </svg>
+    </div>
+  )
+}
+
 function Features() {
   const FeatureRow = ({ icon: Icon, title, description, alignLeft, AnimIcon }) => {
-    const [isHovered, setIsHovered] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const rowRef = useRef(null);
 
@@ -530,35 +551,30 @@ function Features() {
 
     const cardContent = (
       <div className="flex flex-col w-full md:w-5/12 z-10 p-4 lg:p-6 transition-all duration-300">
-        <div
-          className="flex flex-row items-center rounded-2xl p-6 lg:p-8 transition-all duration-300 mb-4"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          style={{
-            backgroundColor: isHovered ? '#f3c555' : '#ffffff',
-            color: '#000000',
-            border: isHovered ? '3px solid #000000' : '3px solid transparent',
-            boxShadow: isHovered ? '-10px 10px 0px 0px #000000' : '0px 4px 15px rgba(0,0,0,0.03)',
-            transform: isHovered ? 'translate(6px, -6px)' : 'translate(0, 0)',
-            cursor: 'default',
-          }}
-        >
-          <div className="mr-4">
-            <Icon size={36} strokeWidth={2.5} color="#000000" style={{ transition: 'transform 0.3s ease', transform: isHovered ? 'scale(1.1)' : 'scale(1)' }} />
-          </div>
-          <h3 className="text-2xl font-bold tracking-tight" style={{ fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif', color: '#000000', margin: 0 }}>
-            {title}
-          </h3>
-        </div>
-        <div className="px-2 mt-[10px]">
-          <p className="text-[16px] leading-[1.65] font-normal" 
-             style={{ 
-               color: '#000000', 
-               cursor: 'default', 
-               letterSpacing: '0.015em', 
-               WebkitFontSmoothing: 'antialiased',
-               fontFamily: 'system-ui, -apple-system, sans-serif'
-             }}>
+        <h3 className="tracking-tight" style={{
+          fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif',
+          fontWeight: 900,
+          fontSize: 'clamp(2.5rem, 4.5vw, 4.0rem)',
+          lineHeight: '0.9',
+          letterSpacing: '-0.02em',
+          color: '#111625',
+          margin: 0,
+          cursor: 'default',
+          fontVariantLigatures: 'none'
+        }}>
+          {title}
+        </h3>
+        <div className="mt-[20px] md:pl-2">
+          <p className="text-[18px] md:text-[20px] leading-[1.4]"
+            style={{
+              color: '#374151',
+              cursor: 'default',
+              letterSpacing: '0.01em',
+              WebkitFontSmoothing: 'antialiased',
+              fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif',
+              fontWeight: 400,
+              fontVariantLigatures: 'none'
+            }}>
             {description}
           </p>
         </div>
@@ -566,7 +582,7 @@ function Features() {
     );
 
     const illustrationContent = (
-      <div 
+      <div
         className="hidden md:flex w-full md:w-5/12 items-center justify-center transition-all duration-[600ms] ease-out"
         style={{
           opacity: isVisible ? 1 : 0,
@@ -574,15 +590,15 @@ function Features() {
         }}
       >
         <div className={`relative flex items-center justify-center w-full transition-all duration-[600ms] ${isVisible ? 'scale-100' : 'scale-75 opacity-0'}`}
-             style={{ transitionDelay: '100ms' }}>
+          style={{ transitionDelay: '100ms' }}>
           <AnimIcon isVisible={isVisible} />
         </div>
       </div>
     );
 
     return (
-      <div 
-        ref={rowRef} 
+      <div
+        ref={rowRef}
         className={`flex flex-col ${alignLeft ? 'md:flex-row' : 'md:flex-row-reverse'} items-center justify-between gap-12 w-full transition-all duration-[600ms] ease-out`}
         style={{
           opacity: isVisible ? 1 : 0,
@@ -597,22 +613,22 @@ function Features() {
 
   // Graphic Designer Illustrations using Real Assets & Clean Layouts
   const ScannerIllustration = ({ isVisible }) => (
-    <div className="relative w-full h-[450px] md:h-[550px] flex items-center justify-center overflow-visible select-none">
-      
-      {/* Actual Product Asset (Massively increased size) */}
+    <div className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-visible select-none">
+
+      {/* Actual Product Asset */}
       <div className="absolute transition-all duration-[800ms] ease-out z-10"
-           style={{ transform: isVisible ? 'scale(1) translateY(0)' : 'scale(0.8) translateY(40px)', opacity: isVisible ? 1 : 0 }}>
-        <img src="/assets/MSCereal.png" alt="Magic Spoon Cereal" className="w-[750px] md:w-[850px] h-auto drop-shadow-2xl" />
+        style={{ transform: isVisible ? 'scale(1) translateY(0)' : 'scale(0.8) translateY(40px)', opacity: isVisible ? 1 : 0 }}>
+        <img src="/assets/MSCereal.png" alt="Magic Spoon Cereal" className="w-[560px] md:w-[630px] max-w-none h-auto drop-shadow-2xl" />
       </div>
 
-      {/* 'Good!' Notification (Moved to right, pill shape, dark grey text) */}
-      <div className="absolute top-[20%] right-[0%] md:right-[5%] transition-all duration-[600ms] cubic-bezier(0.34, 1.56, 0.64, 1) delay-[400ms] z-20"
-           style={{ transform: isVisible ? 'scale(1)' : 'scale(0) translateY(20px)', opacity: isVisible ? 1 : 0 }}>
+      {/* 'Good!' Notification */}
+      <div className="absolute top-2 md:top-6 right-2 md:right-[5%] transition-all duration-[600ms] cubic-bezier(0.34, 1.56, 0.64, 1) delay-[400ms] z-20"
+        style={{ transform: isVisible ? 'scale(1)' : 'scale(0) translateY(20px)', opacity: isVisible ? 1 : 0 }}>
         <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3">
-           <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center">
-             <Check size={20} strokeWidth={4} className="text-white" />
-           </div>
-           <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Good!</span>
+          <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center">
+            <Check size={20} strokeWidth={4} className="text-white" />
+          </div>
+          <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Good!</span>
         </div>
       </div>
 
@@ -620,152 +636,206 @@ function Features() {
   );
 
   const UsersIllustration = ({ isVisible }) => {
-    // Interactivity: Let user click the floating toggles
-    const [toggles, setToggles] = useState([true, false, true]);
+    const [activeIdx, setActiveIdx] = useState(-1);
+
+    const profiles = [
+      {
+        label: "Seed Oil-Free", bg: "#b8fb3c",
+        allowed: ["Olive Oil", "Butter", "Beef Tallow"],
+        disallowed: ["Canola Oil", "Soybean Oil", "Vegetable Oil"]
+      },
+      {
+        label: "Low-FODMAP Vegan", bg: "#ffb3ba",
+        allowed: ["Tofu", "Rice Quinoa", "Almond Milk"],
+        disallowed: ["Garlic", "Onions", "High-Fructose"]
+      },
+      {
+        label: "Kosher Diet", bg: "#bae1ff",
+        allowed: ["Certified Meat", "Fish with Scales", "Pareve items"],
+        disallowed: ["Pork Products", "Shellfish", "Meat & Dairy Combo"]
+      },
+    ];
 
     return (
-      <div className="relative w-full h-[450px] md:h-[550px] flex flex-col items-center justify-center gap-8 overflow-visible select-none">
-        
-        {/* Straight, massively scaled Centered Toggles */}
-        {[
-          { label: "Seed Oil-Free", delay: "200ms", bg: "#b8fb3c" },
-          { label: "Low-FODMAP Vegans", delay: "400ms", bg: "#ffb3ba" },
-          { label: "Kosher Diet", delay: "600ms", bg: "#bae1ff" },
-        ].map((item, idx) => (
-          <div key={idx} 
-               className="relative z-30 flex items-center justify-between w-[320px] md:w-[420px] p-6 rounded-[30px] border border-gray-100/50 cursor-pointer transition-all duration-[600ms] hover:scale-[1.02]"
-               style={{ 
-                 backgroundColor: item.bg,
-                 transform: isVisible ? `translateY(0)` : 'translateY(40px)', 
-                 opacity: isVisible ? 1 : 0,
-                 transitionDelay: item.delay
-               }}
-               onClick={() => {
-                 const newToggles = [...toggles];
-                 newToggles[idx] = !newToggles[idx];
-                 setToggles(newToggles);
-               }}>
-            <span className="text-gray-900 font-bold font-sans tracking-tight text-[20px] md:text-[24px]">{item.label}</span>
+      <div className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-visible select-none">
+        <div className="relative w-[320px] md:w-[420px] h-full flex justify-center mt-6 md:mt-16 perspective-[1000px]">
+          {profiles.map((item, idx) => {
+            const isActive = activeIdx === idx;
             
-            {/* Massive Green/Grey Toggle Switch */}
-            <div className={`relative w-[64px] h-[36px] rounded-full transition-colors duration-300 ease-in-out ${toggles[idx] ? 'bg-[#22c55e]' : 'bg-gray-200'}`}>
-               <div className={`absolute top-[4px] w-[28px] h-[28px] bg-white rounded-full shadow-sm transition-transform duration-300 ease-in-out ${toggles[idx] ? 'translate-x-[32px]' : 'translate-x-[4px]'}`}>
-               </div>
-            </div>
-          </div>
-        ))}
+            let translateY = 0;
+            const overlap = 18;
+            for (let i = 0; i < idx; i++) {
+                translateY += (activeIdx === i ? 250 : 72) - overlap;
+            }
+            if (activeIdx === -1) translateY += 20;
+
+            const zIndex = isActive ? 50 : 10 + idx;
+
+            return (
+              <div key={idx}
+                onClick={() => setActiveIdx(isActive ? -1 : idx)}
+                className="absolute shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-900/5 cursor-pointer overflow-hidden transition-all duration-[650ms] cubic-bezier(0.25, 1, 0.5, 1)"
+                style={{
+                  backgroundColor: item.bg,
+                  width: '100%',
+                  height: isActive ? '250px' : '72px',
+                  borderRadius: isActive ? '32px' : '24px',
+                  transform: isVisible ? `translate3d(0, ${translateY}px, 0)` : `translate3d(0, ${translateY + 60}px, 0)`,
+                  opacity: isVisible ? 1 : 0,
+                  zIndex: zIndex,
+                  top: 0
+                }}>
+                <div className="px-5 py-4 md:px-6 md:py-4 h-full flex flex-col pointer-events-none">
+                  {/* Header Row */}
+                  <div className="flex justify-between items-center w-full h-[40px]">
+                    <span className="text-gray-900 font-bold tracking-tight text-[22px] md:text-[24px]" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>{item.label}</span>
+                    <div className="w-[32px] h-[32px] rounded-full bg-white/60 flex items-center justify-center shadow-sm">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+                           style={{ transform: isActive ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.4s ease' }}>
+                        <path d="m6 9 6 6 6-6"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Expanded Content */}
+                  <div className={`mt-5 flex-1 flex flex-row gap-2 md:gap-3 transition-opacity duration-300 ${isActive ? 'opacity-100 delay-200' : 'opacity-0 delay-0'}`}>
+                    <div className="flex-1 bg-white/40 rounded-2xl p-3 md:p-3.5 flex flex-col gap-1.5">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <Check size={16} strokeWidth={4} className="text-green-700" />
+                        <span className="text-gray-900 font-bold text-[13px] md:text-[14px] uppercase tracking-wider" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>Allowed</span>
+                      </div>
+                      {item.allowed.map(txt => <span key={txt} className="text-gray-800 text-[13px] md:text-[15px] leading-tight font-medium opacity-90" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>• {txt}</span>)}
+                    </div>
+                    <div className="flex-1 bg-white/40 rounded-2xl p-3 md:p-3.5 flex flex-col gap-1.5">
+                       <div className="flex items-center gap-1.5 mb-0.5">
+                        <X size={16} strokeWidth={4} className="text-red-700" />
+                        <span className="text-gray-900 font-bold text-[13px] md:text-[14px] uppercase tracking-wider" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>Avoid</span>
+                      </div>
+                      {item.disallowed.map(txt => <span key={txt} className="text-gray-800 text-[13px] md:text-[15px] leading-tight font-medium opacity-90" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>• {txt}</span>)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const RealisticBag = ({ isBad }) => {
+    const baseColor = isBad ? 'bg-gradient-to-br from-red-600 via-red-500 to-red-800' : 'bg-gradient-to-br from-emerald-500 via-emerald-400 to-emerald-700';
+    return (
+      <div className={`relative w-[130px] md:w-[160px] h-[190px] md:h-[230px] rounded-xl shadow-2xl overflow-hidden ${baseColor} border-t-[6px] border-b-[6px] border-t-white/20 border-b-black/30`}
+        style={{
+          boxShadow: '0 30px 60px -15px rgba(0,0,0,0.5), inset 20px 0 30px rgba(0,0,0,0.3), inset -20px 0 30px rgba(0,0,0,0.3), inset 0 30px 30px rgba(255,255,255,0.4)',
+          clipPath: 'polygon(5% 0, 95% 0, 100% 100%, 0 100%)',
+          borderRadius: '8px',
+        }}>
+
+        {/* Foil Ridges */}
+        <div className="absolute top-0 left-0 w-full h-[6px] opacity-40 mix-blend-overlay" style={{ backgroundImage: 'linear-gradient(90deg, transparent 50%, #000 50%)', backgroundSize: '6px 100%' }}></div>
+        <div className="absolute bottom-0 left-0 w-full h-[6px] opacity-60 mix-blend-overlay" style={{ backgroundImage: 'linear-gradient(90deg, transparent 50%, #000 50%)', backgroundSize: '6px 100%' }}></div>
+
+        {/* Diagonal Foil Glare */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent w-[200%] h-[200%] transform -rotate-45 -translate-y-1/4 -translate-x-[50%] blur-xl opacity-90 pointer-events-none"></div>
+
+        {/* Label Content */}
+        <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 w-[80%] py-4 bg-white shadow-2xl rounded-full flex flex-col items-center justify-center opacity-95">
+          <div className="font-sans font-black text-[10px] text-gray-800 uppercase tracking-[0.2em]">{isBad ? "SPICY" : "NATURE"}</div>
+          <div className="font-sans font-black text-2xl text-black tracking-tight" style={{ transform: 'scaleY(1.2)' }}>{isBad ? "CHIPS" : "ROOTS"}</div>
+        </div>
+
+        {/* Physical Crinkles */}
+        <div className="absolute top-[25%] left-[-10%] w-[120%] h-[2px] bg-white/40 rotate-12 blur-[1px] mix-blend-overlay"></div>
+        <div className="absolute bottom-[30%] left-[-10%] w-[120%] h-[3px] bg-black/30 -rotate-6 blur-[2px] mix-blend-overlay"></div>
+        <div className="absolute bottom-[20%] right-[-10%] w-[50%] h-[2px] bg-white/30 rotate-45 blur-[1px] mix-blend-overlay"></div>
       </div>
     );
   };
 
   const RecommendationIllustration = ({ isVisible }) => (
-    <div className="relative w-full h-[450px] md:h-[550px] flex items-center justify-center overflow-visible select-none">
-
-      {/* Left Item (Poor Choice) */}
-      <div className="absolute left-[2%] md:left-[8%] flex flex-col items-center gap-4 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
-           style={{ transform: isVisible ? 'translateY(10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '100ms' }}>
-         
-         {/* Realistic Chip Bag (Bad Item) */}
-         <svg viewBox="0 0 100 140" fill="none" className="w-[140px] md:w-[180px]">
-           <defs>
-             <linearGradient id="badBagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#f87171" />
-               <stop offset="100%" stopColor="#dc2626" />
-             </linearGradient>
-           </defs>
-           {/* Bag Body with crimping details */}
-           <path d="M15 5 L20 10 L25 5 L30 10 L35 5 L40 10 L45 5 L50 10 L55 5 L60 10 L65 5 L70 10 L75 5 L80 10 L85 5 
-                    Q 95 30, 95 70 Q 95 110, 85 135
-                    L80 130 L75 135 L70 130 L65 135 L60 130 L55 135 L50 130 L45 135 L40 130 L35 135 L30 130 L25 135 L20 130 L15 135
-                    Q 5 110, 5 70 Q 5 30, 15 5 Z" 
-                 fill="url(#badBagGrad)" />
-           {/* Inner Label Accent */}
-           <circle cx="50" cy="70" r="25" fill="#fef08a" />
-             {/* Realistic shadow/fold line */}
-           <path d="M10 20 Q 40 100, 90 40" stroke="rgba(255,255,255,0.2)" strokeWidth="4" fill="none" />
-           <path d="M50 63 L45 75 L55 75 Z" fill="#dc2626" />
-         </svg>
-
-         {/* Yuka-style Rating Pill (Scanner style matched) */}
-         <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3 mt-4">
-           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
-             <X size={20} strokeWidth={4} className="text-white" />
-           </div>
-           <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Bad</span>
-         </div>
+    <div className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-visible select-none">
+      <div className="absolute left-[2%] md:left-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
+        style={{ transform: isVisible ? 'translateY(10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '100ms' }}>
+        <RealisticBag isBad={true} />
+        <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"><X size={20} strokeWidth={4} className="text-white" /></div>
+          <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Bad</span>
+        </div>
       </div>
-
-      {/* Clean Swap Arrow (Pointing from Bad to Good) */}
-      <div className="absolute top-[40%] transition-all duration-[800ms] ease-out z-20 text-gray-500"
-           style={{ transform: isVisible ? 'translateX(0) scale(1)' : 'translateX(-20px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
-         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="md:w-16 md:h-16">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-         </svg>
+      <div className="absolute top-[35%] md:top-[40%] transition-all duration-[800ms] ease-out z-20 text-gray-400"
+        style={{ transform: isVisible ? 'translateX(0) scale(1)' : 'translateX(-20px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="md:w-16 md:h-16"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
       </div>
-
-      {/* Right Item (Excellent Choice) */}
-      <div className="absolute right-[2%] md:right-[8%] flex flex-col items-center gap-4 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
-           style={{ transform: isVisible ? 'translateY(-10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
-         
-         {/* Realistic Chip Bag (Good Item) */}
-         <svg viewBox="0 0 100 140" fill="none" className="w-[140px] md:w-[180px]">
-           <defs>
-             <linearGradient id="goodBagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-               <stop offset="0%" stopColor="#fefce8" />
-               <stop offset="100%" stopColor="#fef3c7" />
-             </linearGradient>
-           </defs>
-           {/* Bag Body with crimping details */}
-           <path d="M15 5 L20 10 L25 5 L30 10 L35 5 L40 10 L45 5 L50 10 L55 5 L60 10 L65 5 L70 10 L75 5 L80 10 L85 5 
-                    Q 95 30, 95 70 Q 95 110, 85 135
-                    L80 130 L75 135 L70 130 L65 135 L60 130 L55 135 L50 130 L45 135 L40 130 L35 135 L30 130 L25 135 L20 130 L15 135
-                    Q 5 110, 5 70 Q 5 30, 15 5 Z" 
-                 fill="url(#goodBagGrad)" />
-           {/* Inner Label Accent */}
-           <path d="M25 30 Q 50 20, 75 30 L 70 100 Q 50 110, 30 100 Z" fill="#86efac" />
-           {/* Realistic shadow/fold line */}
-           <path d="M20 30 Q 30 90, 80 50" stroke="rgba(0,0,0,0.05)" strokeWidth="4" fill="none" />
-           <path d="M50 55 L40 75 L60 75 Z" fill="#15803d" />
-         </svg>
-
-         {/* Yuka-style Rating Pill (Scanner style matched) */}
-         <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3 mt-4">
-           <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center">
-             <Check size={20} strokeWidth={4} className="text-white" />
-           </div>
-           <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Good!</span>
-         </div>
+      <div className="absolute right-[2%] md:right-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
+        style={{ transform: isVisible ? 'translateY(-10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
+        <RealisticBag isBad={false} />
+        <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center"><Check size={20} strokeWidth={4} className="text-white" /></div>
+          <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Good!</span>
+        </div>
       </div>
-
     </div>
   );
 
   return (
-    <section id="features-section" className="px-6 pt-8 pb-16 overflow-hidden" style={{ background: '#FCFBF8' }}>
-      <div className="max-w-6xl mx-auto flex flex-col gap-4 md:gap-7">
-        <FeatureRow
-          icon={Scan}
-          title="Personalized Food Scanner"
-          description="Fodd can scan your products (item, box, or barcode), and provide an answer based on your specific health profile."
-          alignLeft={true}
-          AnimIcon={ScannerIllustration}
-        />
-        <FeatureRow
-          icon={Users}
-          title="For Everyone"
-          description="Fodd can be used by anyone, from people managing multiple restrictions to people with none."
-          alignLeft={false}
-          AnimIcon={UsersIllustration}
-        />
-        <FeatureRow
-          icon={Sparkles}
-          title="Recommendation System"
-          description="Fodd has an advanced recommendation system that helps you know what to eat/avoid based on your profile."
-          alignLeft={true}
-          AnimIcon={RecommendationIllustration}
-        />
-      </div>
-    </section>
+    <>
+      <section id="features-section" className="relative px-6 pt-16 pb-24 overflow-hidden" style={{ background: '#FCF8ED' }}>
+        <FloatingShapes />
+        <div className="relative max-w-6xl mx-auto flex flex-col gap-4 md:gap-10 z-10">
+          <FeatureRow
+            icon={Scan}
+            title="Personalized Food Scanner"
+            description="Fodd can scan your products (item, box, or barcode), and provide an answer based on your specific health profile."
+            alignLeft={true}
+            AnimIcon={ScannerIllustration}
+          />
+          <FeatureRow
+            icon={Users}
+            title="For Everyone"
+            description="Fodd can be used by anyone, from people managing multiple restrictions to people with none."
+            alignLeft={false}
+            AnimIcon={UsersIllustration}
+          />
+          <FeatureRow
+            icon={Sparkles}
+            title="Recommendation System"
+            description="Fodd has an advanced recommendation system that helps you know what to eat/avoid based on your profile."
+            alignLeft={true}
+            AnimIcon={RecommendationIllustration}
+          />
+        </div>
+      </section>
+
+      {/* NEW MARQUEE SECTION */}
+      <section className="relative w-full overflow-hidden flex flex-col gap-4 py-12 select-none" style={{ backgroundColor: FODD_BLUE }}>
+        <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-[#279cc9] to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-[#279cc9] to-transparent z-10 pointer-events-none"></div>
+
+        {[ 
+          { items: AUDIENCE_PROFILES.slice(0, 22), dir: 'marquee' }, 
+          { items: AUDIENCE_PROFILES.slice(22, 44), dir: 'marquee-reverse' }, 
+          { items: AUDIENCE_PROFILES.slice(44), dir: 'marquee' } 
+        ].map((row, idx) => {
+          // Physics matching: CSS percent translation requires normalized duration scaling based on absolute width.
+          // Estimated width = 10px per character + ~70px of paddings/margins per span
+          const totalEstimatedWidth = row.items.reduce((acc, cur) => acc + (cur.length * 10) + 70, 0);
+          const speedFactor = idx === 2 ? 40 : 45; // lower means slower. 45 is standard, row 3 is 40.
+          const computedDuration = (totalEstimatedWidth / speedFactor).toFixed(1);
+          
+          return (
+            <div key={idx} className="flex w-max" style={{ animation: `${row.dir} ${computedDuration}s linear infinite` }}>
+              {[...row.items, ...row.items].map((p, i) => (
+                <div key={i} className="flex-shrink-0 px-6 py-2.5 md:px-8 md:py-3.5 mx-2 bg-white/10 rounded-full flex items-center justify-center transition-colors duration-300 hover:bg-white/20">
+                  <span className="text-white font-medium tracking-tight text-[16px] md:text-[20px]" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>{p}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </section>
+    </>
   )
 }
 
