@@ -624,7 +624,7 @@ function Features() {
       {/* 'Good!' Notification */}
       <div className="absolute top-2 md:top-6 right-2 md:right-[5%] transition-all duration-[600ms] cubic-bezier(0.34, 1.56, 0.64, 1) delay-[400ms] z-20"
         style={{ transform: isVisible ? 'scale(1)' : 'scale(0) translateY(20px)', opacity: isVisible ? 1 : 0 }}>
-        <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3">
+        <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center">
             <Check size={20} strokeWidth={4} className="text-white" />
           </div>
@@ -759,7 +759,7 @@ function Features() {
       <div className="absolute left-[2%] md:left-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
         style={{ transform: isVisible ? 'translateY(10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '100ms' }}>
         <RealisticBag isBad={true} />
-        <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3">
+        <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"><X size={20} strokeWidth={4} className="text-white" /></div>
           <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Bad</span>
         </div>
@@ -771,7 +771,7 @@ function Features() {
       <div className="absolute right-[2%] md:right-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
         style={{ transform: isVisible ? 'translateY(-10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
         <RealisticBag isBad={false} />
-        <div className="bg-white px-6 py-3 rounded-full shadow-xl border border-gray-100 flex items-center gap-3">
+        <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center"><Check size={20} strokeWidth={4} className="text-white" /></div>
           <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Good!</span>
         </div>
@@ -781,7 +781,7 @@ function Features() {
 
   return (
     <>
-      <section id="features-section" className="relative px-6 pt-16 pb-24 overflow-hidden" style={{ background: '#FCF8ED' }}>
+      <section id="features-section" className="relative px-6 pt-16 pb-24 overflow-hidden" style={{ background: '#ffffff' }}>
         <FloatingShapes />
         <div className="relative max-w-6xl mx-auto flex flex-col gap-4 md:gap-10 z-10">
           <FeatureRow
@@ -821,7 +821,7 @@ function Features() {
           // Physics matching: CSS percent translation requires normalized duration scaling based on absolute width.
           // Estimated width = 10px per character + ~70px of paddings/margins per span
           const totalEstimatedWidth = row.items.reduce((acc, cur) => acc + (cur.length * 10) + 70, 0);
-          const speedFactor = idx === 2 ? 40 : 45; // lower means slower. 45 is standard, row 3 is 40.
+          const speedFactor = idx === 2 ? 20 : 45; // lower means slower. 45 is standard, row 3 is half speed (20).
           const computedDuration = (totalEstimatedWidth / speedFactor).toFixed(1);
           
           return (
