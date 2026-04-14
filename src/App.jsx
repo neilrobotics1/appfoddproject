@@ -654,18 +654,28 @@ function Features() {
         allowed: ["Certified Meat", "Fish with Scales", "Pareve items"],
         disallowed: ["Pork Products", "Shellfish", "Meat & Dairy Combo"]
       },
+      {
+        label: "Celiac Disease", bg: "#e2cbff",
+        allowed: ["Certified GF Oats", "Rice & Quinoa", "Fresh Produce"],
+        disallowed: ["Wheat & Flour", "Barley & Rye", "Cross-Contaminated"]
+      },
+      {
+        label: "Nothing", bg: "#ffd3b6",
+        allowed: ["Literally Anything", "All the Oils", "Any Dairy / Meat"],
+        disallowed: ["Worrying", "Checking Labels", "Eating Too Little"]
+      }
     ];
 
     return (
-      <div className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-visible select-none">
+      <div className="relative w-full h-[520px] md:h-[580px] flex items-center justify-center overflow-visible select-none">
         <div className="relative w-[320px] md:w-[420px] h-full flex justify-center mt-6 md:mt-16 perspective-[1000px]">
           {profiles.map((item, idx) => {
             const isActive = activeIdx === idx;
-            
-            let translateY = 0;
+
+            let translateY = 80;
             const overlap = 18;
             for (let i = 0; i < idx; i++) {
-                translateY += (activeIdx === i ? 250 : 72) - overlap;
+              translateY += (activeIdx === i ? 250 : 72) - overlap;
             }
             if (activeIdx === -1) translateY += 20;
 
@@ -674,7 +684,7 @@ function Features() {
             return (
               <div key={idx}
                 onClick={() => setActiveIdx(isActive ? -1 : idx)}
-                className="absolute shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-900/5 cursor-pointer overflow-hidden transition-all duration-[650ms] cubic-bezier(0.25, 1, 0.5, 1)"
+                className="absolute shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-gray-900/5 cursor-pointer overflow-hidden transition-all duration-500 ease-out"
                 style={{
                   backgroundColor: item.bg,
                   width: '100%',
@@ -682,6 +692,7 @@ function Features() {
                   borderRadius: isActive ? '32px' : '24px',
                   transform: isVisible ? `translate3d(0, ${translateY}px, 0)` : `translate3d(0, ${translateY + 60}px, 0)`,
                   opacity: isVisible ? 1 : 0,
+                  transitionDelay: isVisible ? `${200 + (idx * 120)}ms` : '0ms',
                   zIndex: zIndex,
                   top: 0
                 }}>
@@ -690,9 +701,9 @@ function Features() {
                   <div className="flex justify-between items-center w-full h-[40px]">
                     <span className="text-gray-900 font-bold tracking-tight text-[22px] md:text-[24px]" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>{item.label}</span>
                     <div className="w-[32px] h-[32px] rounded-full bg-white/60 flex items-center justify-center shadow-sm">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
-                           style={{ transform: isActive ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.4s ease' }}>
-                        <path d="m6 9 6 6 6-6"/>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transform: isActive ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.4s ease' }}>
+                        <path d="m6 9 6 6 6-6" />
                       </svg>
                     </div>
                   </div>
@@ -707,7 +718,7 @@ function Features() {
                       {item.allowed.map(txt => <span key={txt} className="text-gray-800 text-[13px] md:text-[15px] leading-tight font-medium opacity-90" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>• {txt}</span>)}
                     </div>
                     <div className="flex-1 bg-white/40 rounded-2xl p-3 md:p-3.5 flex flex-col gap-1.5">
-                       <div className="flex items-center gap-1.5 mb-0.5">
+                      <div className="flex items-center gap-1.5 mb-0.5">
                         <X size={16} strokeWidth={4} className="text-red-700" />
                         <span className="text-gray-900 font-bold text-[13px] md:text-[14px] uppercase tracking-wider" style={{ fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif' }}>Avoid</span>
                       </div>
@@ -813,17 +824,17 @@ function Features() {
         <div className="absolute top-0 left-0 w-16 md:w-32 h-full bg-gradient-to-r from-[#279cc9] to-transparent z-10 pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-[#279cc9] to-transparent z-10 pointer-events-none"></div>
 
-        {[ 
-          { items: AUDIENCE_PROFILES.slice(0, 22), dir: 'marquee' }, 
-          { items: AUDIENCE_PROFILES.slice(22, 44), dir: 'marquee-reverse' }, 
-          { items: AUDIENCE_PROFILES.slice(44), dir: 'marquee' } 
+        {[
+          { items: AUDIENCE_PROFILES.slice(0, 22), dir: 'marquee' },
+          { items: AUDIENCE_PROFILES.slice(22, 44), dir: 'marquee-reverse' },
+          { items: AUDIENCE_PROFILES.slice(44), dir: 'marquee' }
         ].map((row, idx) => {
           // Physics matching: CSS percent translation requires normalized duration scaling based on absolute width.
           // Estimated width = 10px per character + ~70px of paddings/margins per span
           const totalEstimatedWidth = row.items.reduce((acc, cur) => acc + (cur.length * 10) + 70, 0);
           const speedFactor = idx === 2 ? 20 : 45; // lower means slower. 45 is standard, row 3 is half speed (20).
           const computedDuration = (totalEstimatedWidth / speedFactor).toFixed(1);
-          
+
           return (
             <div key={idx} className="flex w-max" style={{ animation: `${row.dir} ${computedDuration}s linear infinite` }}>
               {[...row.items, ...row.items].map((p, i) => (
