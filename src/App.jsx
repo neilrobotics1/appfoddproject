@@ -756,7 +756,7 @@ function Features() {
         </div>
       </div>
       <div className="absolute top-[35%] md:top-[40%] transition-all duration-[800ms] ease-out z-20 text-gray-400"
-        style={{ transform: isVisible ? 'translate(37px, -10px) scale(1)' : 'translate(17px, -10px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
+        style={{ transform: isVisible ? 'translate(32px, -12px) scale(1)' : 'translate(12px, -12px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="md:w-16 md:h-16"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
       </div>
       <div className="absolute right-[2%] md:right-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
@@ -1160,6 +1160,44 @@ function CustomScrollbar() {
 }
 
 /* ─────────────────────────────────────────────
+   FODD SQUAD SECTION (Page 4)
+───────────────────────────────────────────── */
+function FoddSquadSection() {
+  return (
+    <section className="relative w-full flex flex-col items-center justify-center pt-[100px] pb-[110px] px-6 text-center select-none" style={{ backgroundColor: '#279cc9' }}>
+      <h2 style={{
+        fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif',
+        fontWeight: 900,
+        fontSize: 'clamp(2.0rem, 3.8vw, 3.4rem)',
+        color: '#ffffff',
+        margin: 0,
+        lineHeight: 1.1,
+        letterSpacing: '-0.02em',
+      }}>
+        Become a member of the Fodd Squad
+      </h2>
+      <p className="mt-10 md:mt-12" style={{
+        fontFamily: '"Recoleta", system-ui, -apple-system, sans-serif',
+        fontWeight: 400,
+        fontSize: 'clamp(1.1rem, 1.6vw, 1.4rem)',
+        color: '#ffffff',
+        marginTop: '40px',
+      }}>
+        Coming soon to:
+      </p>
+
+      <div className="mt-12 md:mt-20 flex items-center justify-center">
+        <img
+          src="/assets/googleplayappstorefinal.png"
+          alt="Available soon"
+          className="w-[340px] md:w-[600px] object-contain drop-shadow-xl transition-transform duration-[600ms] hover:scale-105"
+        />
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
    ROOT APP
 ───────────────────────────────────────────── */
 export default function App() {
@@ -1189,6 +1227,7 @@ export default function App() {
       <AudienceSection />
       <Hero />
       <Features />
+      <FoddSquadSection />
       <LogoBreak />
     </div>
   )
