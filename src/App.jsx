@@ -739,8 +739,8 @@ function Features() {
       src={isBad ? "/assets/redtakis.png" : "/assets/healthytakis.webp"}
       alt={isBad ? "Spicy Alternative" : "Healthy Option"}
       className={`object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)] ${isBad
-          ? "w-[200px] md:w-[240px] h-[270px] md:h-[340px]"
-          : "w-[140px] md:w-[165px] h-[200px] md:h-[240px]"
+        ? "w-[200px] md:w-[240px] h-[270px] md:h-[340px]"
+        : "w-[140px] md:w-[165px] h-[200px] md:h-[240px]"
         }`}
     />
   );
@@ -756,11 +756,11 @@ function Features() {
         </div>
       </div>
       <div className="absolute top-[35%] md:top-[40%] transition-all duration-[800ms] ease-out z-20 text-gray-400"
-        style={{ transform: isVisible ? 'translate(20px, -10px) scale(1)' : 'translate(0px, -10px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
+        style={{ transform: isVisible ? 'translate(37px, -10px) scale(1)' : 'translate(17px, -10px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="md:w-16 md:h-16"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
       </div>
       <div className="absolute right-[2%] md:right-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
-        style={{ transform: isVisible ? 'translate(20px, -25px)' : 'translate(20px, 45px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
+        style={{ transform: isVisible ? 'translate(40px, -25px)' : 'translate(40px, 45px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
         <RealisticBag isBad={false} />
         <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center"><Check size={20} strokeWidth={4} className="text-white" /></div>
