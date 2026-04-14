@@ -734,53 +734,33 @@ function Features() {
     );
   };
 
-  const RealisticBag = ({ isBad }) => {
-    const baseColor = isBad ? 'bg-gradient-to-br from-red-600 via-red-500 to-red-800' : 'bg-gradient-to-br from-emerald-500 via-emerald-400 to-emerald-700';
-    return (
-      <div className={`relative w-[130px] md:w-[160px] h-[190px] md:h-[230px] rounded-xl shadow-2xl overflow-hidden ${baseColor} border-t-[6px] border-b-[6px] border-t-white/20 border-b-black/30`}
-        style={{
-          boxShadow: '0 30px 60px -15px rgba(0,0,0,0.5), inset 20px 0 30px rgba(0,0,0,0.3), inset -20px 0 30px rgba(0,0,0,0.3), inset 0 30px 30px rgba(255,255,255,0.4)',
-          clipPath: 'polygon(5% 0, 95% 0, 100% 100%, 0 100%)',
-          borderRadius: '8px',
-        }}>
-
-        {/* Foil Ridges */}
-        <div className="absolute top-0 left-0 w-full h-[6px] opacity-40 mix-blend-overlay" style={{ backgroundImage: 'linear-gradient(90deg, transparent 50%, #000 50%)', backgroundSize: '6px 100%' }}></div>
-        <div className="absolute bottom-0 left-0 w-full h-[6px] opacity-60 mix-blend-overlay" style={{ backgroundImage: 'linear-gradient(90deg, transparent 50%, #000 50%)', backgroundSize: '6px 100%' }}></div>
-
-        {/* Diagonal Foil Glare */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent w-[200%] h-[200%] transform -rotate-45 -translate-y-1/4 -translate-x-[50%] blur-xl opacity-90 pointer-events-none"></div>
-
-        {/* Label Content */}
-        <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 w-[80%] py-4 bg-white shadow-2xl rounded-full flex flex-col items-center justify-center opacity-95">
-          <div className="font-sans font-black text-[10px] text-gray-800 uppercase tracking-[0.2em]">{isBad ? "SPICY" : "NATURE"}</div>
-          <div className="font-sans font-black text-2xl text-black tracking-tight" style={{ transform: 'scaleY(1.2)' }}>{isBad ? "CHIPS" : "ROOTS"}</div>
-        </div>
-
-        {/* Physical Crinkles */}
-        <div className="absolute top-[25%] left-[-10%] w-[120%] h-[2px] bg-white/40 rotate-12 blur-[1px] mix-blend-overlay"></div>
-        <div className="absolute bottom-[30%] left-[-10%] w-[120%] h-[3px] bg-black/30 -rotate-6 blur-[2px] mix-blend-overlay"></div>
-        <div className="absolute bottom-[20%] right-[-10%] w-[50%] h-[2px] bg-white/30 rotate-45 blur-[1px] mix-blend-overlay"></div>
-      </div>
-    );
-  };
+  const RealisticBag = ({ isBad }) => (
+    <img
+      src={isBad ? "/assets/redtakis.png" : "/assets/healthytakis.webp"}
+      alt={isBad ? "Spicy Alternative" : "Healthy Option"}
+      className={`object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)] ${isBad
+          ? "w-[200px] md:w-[240px] h-[270px] md:h-[340px]"
+          : "w-[140px] md:w-[165px] h-[200px] md:h-[240px]"
+        }`}
+    />
+  );
 
   const RecommendationIllustration = ({ isVisible }) => (
     <div className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center overflow-visible select-none">
       <div className="absolute left-[2%] md:left-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
-        style={{ transform: isVisible ? 'translateY(10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '100ms' }}>
+        style={{ transform: isVisible ? 'translateY(1px)' : 'translateY(51px)', opacity: isVisible ? 1 : 0, transitionDelay: '100ms' }}>
         <RealisticBag isBad={true} />
-        <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3">
+        <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3 -mt-[21px]">
           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"><X size={20} strokeWidth={4} className="text-white" /></div>
           <span className="text-gray-700 font-bold font-sans text-[18px] tracking-tight">Bad</span>
         </div>
       </div>
       <div className="absolute top-[35%] md:top-[40%] transition-all duration-[800ms] ease-out z-20 text-gray-400"
-        style={{ transform: isVisible ? 'translateX(0) scale(1)' : 'translateX(-20px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="md:w-16 md:h-16"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+        style={{ transform: isVisible ? 'translate(20px, -10px) scale(1)' : 'translate(0px, -10px) scale(0.6)', opacity: isVisible ? 1 : 0, transitionDelay: '400ms' }}>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="md:w-16 md:h-16"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
       </div>
       <div className="absolute right-[2%] md:right-[8%] flex flex-col items-center gap-6 transition-all duration-[800ms] cubic-bezier(0.34, 1.56, 0.64, 1) z-10"
-        style={{ transform: isVisible ? 'translateY(-10px)' : 'translateY(60px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
+        style={{ transform: isVisible ? 'translate(20px, -25px)' : 'translate(20px, 45px)', opacity: isVisible ? 1 : 0, transitionDelay: '250ms' }}>
         <RealisticBag isBad={false} />
         <div className="bg-white px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-black/5 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#22c55e] flex items-center justify-center"><Check size={20} strokeWidth={4} className="text-white" /></div>
