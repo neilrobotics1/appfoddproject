@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { ArrowRight, Check, Scan, Users, Sparkles, ArrowDown, Menu, X } from 'lucide-react'
 import { AUDIENCE_PROFILES } from '../audience_profiles.js'
 import { createClient } from '@supabase/supabase-js'
+import Grainient from './Grainient'
 
 const supabaseUrl = 'https://vdoudevujewbpxiiejvc.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkb3VkZXZ1amV3YnB4aWllanZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDM2NjksImV4cCI6MjA5MDk3OTY2OX0.-2cKo509YvE72Fs6fqIUzwsf3OIAY_9iiGpGj4aPqwE'
@@ -897,10 +898,24 @@ function AudienceSection() {
   }, [bannerRevealed]);
 
   return (
-    <section className="relative flex flex-col items-center justify-start px-6 pt-[113px] lg:pt-[145px] pb-6" style={{ background: '#b8fb3c', minHeight: '100vh' }}>
+    <section className="relative flex flex-col items-center justify-start px-6 pt-[113px] lg:pt-[145px] pb-6 overflow-hidden" style={{ background: 'transparent', minHeight: '100vh' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundColor: '#b8fb3c' }}>
+        <Grainient
+          color1="#b8fb3c"
+          color2="#9eed43"
+          color3="#8be660"
+          timeSpeed={0.0}
+          noiseScale={1.5}
+          grainAmount={0.12}
+          grainScale={1.5}
+          grainAnimated={false}
+          zoom={0.9}
+          contrast={1.5}
+        />
+      </div>
 
       {/* Interactive Area (Flex Stack) */}
-      <div className="relative w-full max-w-5xl flex flex-col items-center justify-center mt-4">
+      <div className="relative w-full max-w-5xl flex flex-col items-center justify-center mt-4 z-10">
 
         {/* Header */}
         <h2 ref={headingRef} className="text-center tracking-tight mb-[40px] lg:mb-[56px]" style={{
@@ -1024,7 +1039,7 @@ function AudienceSection() {
       </div>
 
       {/* Footer Section */}
-      <div className="mt-auto pt-10 flex flex-col items-center justify-end w-full">
+      <div className="mt-auto pt-10 flex flex-col items-center justify-end w-full z-10">
         <h3 className="text-xl md:text-2xl font-bold text-black uppercase tracking-[0.2em] mb-[30px]" style={{ fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif' }}>
           SOUND LIKE YOU?
         </h3>
