@@ -2,6 +2,9 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { ArrowRight, Check, Scan, Users, Sparkles, ArrowDown, Menu, X } from 'lucide-react'
 import { AUDIENCE_PROFILES } from '../audience_profiles.js'
 import { createClient } from '@supabase/supabase-js'
+import { validateEmail, checkRateLimit, recordAttempt, sanitizeEmail } from './security'
+import Confetti from './Confetti'
+import WaitlistModal from './WaitlistModal'
 
 const supabaseUrl = 'https://vdoudevujewbpxiiejvc.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkb3VkZXZ1amV3YnB4aWllanZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0MDM2NjksImV4cCI6MjA5MDk3OTY2OX0.-2cKo509YvE72Fs6fqIUzwsf3OIAY_9iiGpGj4aPqwE'
@@ -269,195 +272,247 @@ function Hero() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
+  const [modalError, setModalError] = useState('')
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+
   const subtitleRef = useRef(null)
   const mottoRef = useRef(null)
-  const youAreaRef = useRef(null)
 
   const hasInput = email.includes('@')
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setIsSubmitting(true)
     setError('')
+    setModalError('')
 
-    const cleanedEmail = email.trim().toLowerCase()
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(cleanedEmail)) {
-      setError('Please enter a valid email.')
-      setIsSubmitting(false)
+    // Anti-bot honeypot protection: if automated scrapers fill this hidden input, fake success
+    if (honeypot) {
+      setSubmitted(true)
+      setEmail('')
       return
     }
 
-    const profanityBlocklist = ['shit', 'fuck', 'ass', 'bitch', 'cunt', 'dick', 'pussy', 'whore', 'bastard'];
-    const prefix = cleanedEmail.split('@')[0];
-    if (profanityBlocklist.some(word => prefix.includes(word))) {
-      setError('Please use a valid professional email.')
-      setIsSubmitting(false)
+    // Client-side rate-limiting / anti-flooding check
+    const rateCheck = checkRateLimit()
+    if (!rateCheck.allowed) {
+      setError(rateCheck.message)
       return
+    }
+
+    // Strict validation + anti-racism/hate-speech/profanity moderation
+    const validation = validateEmail(email)
+    if (!validation.valid) {
+      setError(validation.error)
+      return
+    }
+
+    setPendingEmail(validation.email)
+    setIsModalOpen(true)
+  }
+
+  const handleConfirmJoin = async () => {
+    setIsSubmitting(true)
+    setModalError('')
+
+    const rateCheck = checkRateLimit()
+    if (!rateCheck.allowed) {
+      setModalError(rateCheck.message)
+      setIsSubmitting(false)
+      return false
     }
 
     const { error: dbError } = await supabase
       .from('waitlist')
-      .insert([{ email: cleanedEmail }])
+      .insert([{ email: pendingEmail }])
 
     if (dbError) {
       if (dbError.code === '23505') {
-        setError('You are already registered! Check your inbox soon.')
+        setModalError('You are already registered! Check your inbox soon.')
       } else {
-        setError('An error occurred. Please try again.')
+        setModalError('An error occurred. Please try again.')
       }
       setIsSubmitting(false)
-      return
+      return false
     }
 
-    setSubmitted(true)
+    recordAttempt()
     setIsSubmitting(false)
+    setSubmitted(true)
+    setShowConfetti(true)
     setEmail('')
+    setPendingEmail('')
+    setIsModalOpen(false)
+    return true
+  }
+
+  const handleCancelModal = () => {
+    if (isSubmitting) return
+    setIsModalOpen(false)
+    setModalError('')
   }
 
   return (
-    <section
-      id="hero-section"
-      className="min-h-screen flex items-center px-6 py-16"
-      style={{ background: '#ffffff' }}
-    >
-      <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 md:gap-6 items-center">
+    <>
+      <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-        {/* ── LEFT COLUMN ── */}
-        <div className="flex flex-col items-start gap-5 text-left">
+      <WaitlistModal
+        isOpen={isModalOpen}
+        email={pendingEmail}
+        onConfirm={handleConfirmJoin}
+        onCancel={handleCancelModal}
+        isSubmitting={isSubmitting}
+        error={modalError}
+      />
 
-          {/* Motto */}
-          <p
-            ref={mottoRef}
-            className="tracking-tight px-[20px] -mx-[20px] md:px-[120px] md:-mx-[120px] py-[20px] -my-[20px] md:py-[40px] md:-my-[40px]"
-            style={{
-              fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
-              fontWeight: 700,
-              fontSize: 'clamp(2rem, 8vw, 2.5rem)',
-              color: '#000000',
-              lineHeight: 1.1,
-              cursor: 'default',
-              userSelect: 'none',
-            }}
-          >
-            <GlowText text="Know what food is" containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
-            <br />
-            <GlowText text="right for " containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
-            <span style={{ textDecoration: 'underline', textDecorationColor: FODD_BLUE }}>
-              <GlowText text="you." containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
-            </span>
-          </p>
+      <section
+        id="hero-section"
+        className="min-h-screen flex items-center px-6 py-16"
+        style={{ background: '#ffffff' }}
+      >
+        <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 md:gap-6 items-center">
 
-          {/* Subtitle — mousemove here covers surrounding whitespace too */}
-          <p
-            ref={subtitleRef}
-            className="text-lg leading-relaxed"
-            style={{ color: BASE_COLOR, cursor: 'default', maxWidth: '28rem' }}
-          >
-            Fodd is a{' '}
-            <GlowText text="fully personalized" containerRef={subtitleRef} />
-            {' '}food scanner built around your dietary and health profile.
-          </p>
+          {/* ── LEFT COLUMN ── */}
+          <div className="flex flex-col items-start gap-5 text-left">
 
-          {/* Feature pills */}
-          <div className="flex flex-wrap gap-2" style={{ marginTop: '10px' }}>
-            {[
-              'Supports 4,200+ food allergies',
-              'Supports 100+ intolerances',
-              'Supports 200+ diets',
-            ].map((f) => (
-              <span
-                key={f}
-                className="group inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all duration-300 hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-6px_6px_0_0_#000000] cursor-default bg-white border-black/20 text-black hover:bg-[#f3c555] hover:border-black"
-              >
-                <Check size={11} className="text-black transition-colors" />
-                {f}
+            {/* Motto */}
+            <p
+              ref={mottoRef}
+              className="tracking-tight px-[20px] -mx-[20px] md:px-[120px] md:-mx-[120px] py-[20px] -my-[20px] md:py-[40px] md:-my-[40px]"
+              style={{
+                fontFamily: '"Planc Bold Black", system-ui, -apple-system, sans-serif',
+                fontWeight: 700,
+                fontSize: 'clamp(2rem, 8vw, 2.5rem)',
+                color: '#000000',
+                lineHeight: 1.1,
+                cursor: 'default',
+                userSelect: 'none',
+              }}
+            >
+              <GlowText text="Know what food is" containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
+              <br />
+              <GlowText text="right for " containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
+              <span style={{ textDecoration: 'underline', textDecorationColor: FODD_BLUE }}>
+                <GlowText text="you." containerRef={mottoRef} baseColor="#000000" glowColor={FODD_BLUE} hShrink={0.500} />
               </span>
-            ))}
+            </p>
+
+            {/* Subtitle — mousemove here covers surrounding whitespace too */}
+            <p
+              ref={subtitleRef}
+              className="text-lg leading-relaxed"
+              style={{ color: BASE_COLOR, cursor: 'default', maxWidth: '28rem' }}
+            >
+              Fodd is a{' '}
+              <GlowText text="fully personalized" containerRef={subtitleRef} />
+              {' '}food scanner built around your dietary and health profile.
+            </p>
+
+            {/* Feature pills */}
+            <div className="flex flex-wrap gap-2" style={{ marginTop: '10px' }}>
+              {[
+                'Supports 4,200+ food allergies',
+                'Supports 100+ intolerances',
+                'Supports 200+ diets',
+              ].map((f) => (
+                <span
+                  key={f}
+                  className="group inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all duration-300 hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-6px_6px_0_0_#000000] cursor-default bg-white border-black/20 text-black hover:bg-[#f3c555] hover:border-black"
+                >
+                  <Check size={11} className="text-black transition-colors" />
+                  {f}
+                </span>
+              ))}
+            </div>
+
+            {/* Email capture */}
+            {submitted ? (
+              <div
+                className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full border-2 border-black bg-white text-black font-bold text-base transition-all duration-300 hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-6px_6px_0_0_#000000] hover:bg-[#279cc9] hover:text-white active:scale-95 cursor-default select-none animate-[popReveal_0.3s_ease-out]"
+                style={{
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                }}
+              >
+                <Check size={18} strokeWidth={3} className="text-black group-hover:text-white transition-colors duration-300" />
+                <span>You&apos;re on the list! We&apos;ll be in touch soon.</span>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 w-full" style={{ maxWidth: '28rem' }}>
+                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 relative">
+                  {/* Invisible Honeypot anti-bot trap */}
+                  <input
+                    type="text"
+                    name="website_hp"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', left: '-9999px', height: 0, width: 0 }}
+                    aria-hidden="true"
+                  />
+
+                  <input
+                    type="email"
+                    id="email-input"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setError('') }}
+                    placeholder="your@email.com"
+                    maxLength={100}
+                    autoComplete="email"
+                    spellCheck={false}
+                    className="flex-1 rounded-2xl px-5 py-3.5 text-sm border shadow-sm transition-all duration-200"
+                    style={{
+                      background: '#ffffff',
+                      borderColor: error ? '#ef4444' : '#e5e7eb',
+                      color: '#111827',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.boxShadow = `0 0 0 3px ${FODD_BLUE}40`
+                      e.target.style.borderColor = FODD_BLUE
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.boxShadow = 'none'
+                      e.target.style.borderColor = error ? '#ef4444' : '#e5e7eb'
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!hasInput || isSubmitting}
+                    className="group inline-flex items-center justify-center gap-2 font-semibold text-sm px-6 py-3.5 rounded-2xl whitespace-nowrap transition-all duration-200 active:scale-95"
+                    style={{
+                      background: (hasInput && !isSubmitting) ? FODD_BLUE : '#d1d5db',
+                      color: '#ffffff',
+                      cursor: (hasInput && !isSubmitting) ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    Join Waitlist <ArrowRight size={15} className={hasInput ? "transition-colors duration-200 group-hover:text-[#ffdc52]" : ""} />
+                  </button>
+                </form>
+                {error && <p className="text-red-500 text-xs font-medium pl-1">{error}</p>}
+                <p className="text-xs" style={{ color: '#9ca3af' }}>
+                  No spam. No credit card. Unsubscribe anytime.
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Email capture */}
-          {submitted ? (
-            <div
-              className="inline-flex items-center gap-3 px-5 py-4 rounded-2xl font-semibold text-sm border"
-              style={{ background: '#f0f9fd', borderColor: '#c5e8f5', color: FODD_BLUE }}
-            >
-              <Check size={18} />
-              You&apos;re on the list! We&apos;ll be in touch soon.
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 w-full" style={{ maxWidth: '28rem' }}>
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="email"
-                  id="email-input"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError('') }}
-                  placeholder="your@email.com"
-                  className="flex-1 rounded-2xl px-5 py-3.5 text-sm border shadow-sm"
-                  style={{
-                    background: '#ffffff',
-                    borderColor: '#e5e7eb',
-                    color: '#111827',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.boxShadow = `0 0 0 3px ${FODD_BLUE}40`
-                    e.target.style.borderColor = FODD_BLUE
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.boxShadow = 'none'
-                    e.target.style.borderColor = '#e5e7eb'
-                  }}
-                />
-                <button
-                  type="submit"
-                  disabled={!hasInput || isSubmitting}
-                  className="group inline-flex items-center justify-center gap-2 font-semibold text-sm px-6 py-3.5 rounded-2xl whitespace-nowrap transition-all duration-200"
-                  style={{
-                    background: (hasInput && !isSubmitting) ? FODD_BLUE : '#d1d5db',
-                    color: '#ffffff',
-                    cursor: (hasInput && !isSubmitting) ? 'pointer' : 'not-allowed',
-                    boxShadow: (hasInput && !isSubmitting) ? `0 4px 14px ${FODD_BLUE}50` : 'none',
-                  }}
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Joining...
-                    </span>
-                  ) : (
-                    <>
-                      Join Waitlist <ArrowRight size={15} className={hasInput ? "transition-colors duration-200 group-hover:text-[#ffdc52]" : ""} />
-                    </>
-                  )}
-                </button>
-              </form>
-              {error && <p className="text-red-500 text-xs">{error}</p>}
-              <p className="text-xs" style={{ color: '#9ca3af' }}>
-                No spam. No credit card. Unsubscribe anytime.
-              </p>
-            </div>
-          )}
+          {/* ── RIGHT COLUMN (iPhone mockup) ── */}
+          <div className="flex justify-center md:justify-end items-center">
+            <img
+              src="/assets/FoddSS319.png"
+              alt="Fodd app — scan food items with your camera"
+              className="w-64 sm:w-72 md:w-80 lg:w-96 max-h-[85vh] object-contain"
+              style={{
+                marginTop: '20px', // nudged down slightly per request
+              }}
+            />
+          </div>
         </div>
-
-        {/* ── RIGHT COLUMN (iPhone mockup) ── */}
-        <div className="flex justify-center md:justify-end items-center">
-          <img
-            src="/assets/FoddSS319.png"
-            alt="Fodd app — scan food items with your camera"
-            className="w-64 sm:w-72 md:w-80 lg:w-96 max-h-[85vh] object-contain"
-            style={{
-              marginTop: '20px', // nudged down slightly per request
-            }}
-          />
-        </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }
 
