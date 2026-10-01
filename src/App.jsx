@@ -38,6 +38,10 @@ if (typeof document !== 'undefined') {
       0% { transform: translateX(-50%); }
       100% { transform: translateX(0); }
     }
+    @keyframes heroGridPulse {
+      0%   { transform: scale(1);    opacity: 1; }
+      100% { transform: scale(1.06); opacity: 0.75; }
+    }
     
     ::-webkit-scrollbar {
       display: none;
@@ -898,6 +902,103 @@ function AudienceSection() {
   const headingRef = useRef(null);
   const bannerRef = useRef(null);
 
+  // Cloudflare-style dot grid + cursor spotlight
+  const sectionRef = useRef(null);
+  const canvasRef = useRef(null);
+  const spotlightARef = useRef(null);
+  const cursorARef = useRef({ x: 0.5, y: 0.5 });
+  const targetARef = useRef({ x: 0.5, y: 0.5 });
+  const rafARef = useRef(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const canvas = canvasRef.current;
+    const spotlight = spotlightARef.current;
+    if (!section || !canvas || !spotlight) return;
+
+    const DOT_SPACING = 26;
+    const DOT_RADIUS = 1.5;
+    // Pure white at low opacity — soft white dots on #b8fb3c green
+    const DOT_COLOR = 'rgba(231, 255, 198, 0.9)';
+
+    const drawDots = () => {
+      const W = canvas.width;
+      const H = canvas.height;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = DOT_COLOR;
+      // Cloudflare uses a regular grid of filled circles
+      for (let x = DOT_SPACING / 2; x < W; x += DOT_SPACING) {
+        for (let y = DOT_SPACING / 2; y < H; y += DOT_SPACING) {
+          ctx.beginPath();
+          ctx.arc(x, y, DOT_RADIUS, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    };
+
+    const resizeCanvas = () => {
+      const rect = section.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      drawDots();
+    };
+
+    resizeCanvas();
+    const ro = new ResizeObserver(resizeCanvas);
+    ro.observe(section);
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    // Animate: smooth cursor lerp + breathing scale on canvas
+    let tick = 0;
+    const animate = () => {
+      tick++;
+      const cur = cursorARef.current;
+      const tgt = targetARef.current;
+      const nx = lerp(cur.x, tgt.x, 0.055);
+      const ny = lerp(cur.y, tgt.y, 0.055);
+      cursorARef.current = { x: nx, y: ny };
+
+      // Breathing scale on canvas: 1 → 1.06 over ~6s
+      const breathe = 1 + 0.03 * Math.sin(tick * 0.008);
+      canvas.style.transform = `scale(${breathe})`;
+
+      // Move spotlight to cursor
+      spotlight.style.background = [
+        `radial-gradient(circle 700px at ${nx * 100}% ${ny * 100}%,`,
+        `  rgba(255,255,255,0.28) 0%,`,
+        `  rgba(255,255,255,0.10) 35%,`,
+        `  transparent 70%`,
+        `)`,
+      ].join(' ');
+
+      rafARef.current = requestAnimationFrame(animate);
+    };
+
+    const onMouseMove = (e) => {
+      const rect = section.getBoundingClientRect();
+      targetARef.current = {
+        x: (e.clientX - rect.left) / rect.width,
+        y: (e.clientY - rect.top) / rect.height,
+      };
+    };
+    const onMouseLeave = () => {
+      targetARef.current = { x: 0.5, y: 0.5 };
+    };
+
+    section.addEventListener('mousemove', onMouseMove);
+    section.addEventListener('mouseleave', onMouseLeave);
+    rafARef.current = requestAnimationFrame(animate);
+
+    return () => {
+      section.removeEventListener('mousemove', onMouseMove);
+      section.removeEventListener('mouseleave', onMouseLeave);
+      if (rafARef.current) cancelAnimationFrame(rafARef.current);
+      ro.disconnect();
+    };
+  }, []);
+
   const generateProfile = (isInitial = false) => {
     setIsLoading(true);
     setShowResult(false);
@@ -952,7 +1053,55 @@ function AudienceSection() {
   }, [bannerRevealed]);
 
   return (
-    <section className="relative flex flex-col items-center justify-start px-6 pt-[113px] lg:pt-[145px] pb-6 overflow-hidden" style={{ background: '#b8fb3c', minHeight: '100vh' }}>
+    <section
+      ref={sectionRef}
+      className="relative flex flex-col items-center justify-start px-6 pt-[113px] lg:pt-[145px] pb-6 overflow-hidden"
+      style={{ background: '#b8fb3c', minHeight: '100vh' }}
+    >
+      {/* Dot grid canvas — exact Cloudflare replica */}
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 0,
+          transformOrigin: 'center center',
+          willChange: 'transform',
+        }}
+      />
+      {/* Cursor-tracking white spotlight — mimics Cloudflare's warm center glow */}
+      <div
+        ref={spotlightARef}
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(circle 700px at 50% 50%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.10) 35%, transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 1,
+          willChange: 'background',
+        }}
+      />
+      {/* Corner vignette to blend edges */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: [
+            'radial-gradient(ellipse 35% 35% at 0% 0%,   rgba(184,251,60,0.95) 0%, transparent 65%)',
+            'radial-gradient(ellipse 35% 35% at 100% 0%,  rgba(184,251,60,0.95) 0%, transparent 65%)',
+            'radial-gradient(ellipse 35% 35% at 0% 100%, rgba(184,251,60,0.95) 0%, transparent 65%)',
+            'radial-gradient(ellipse 35% 35% at 100% 100%, rgba(184,251,60,0.95) 0%, transparent 65%)',
+          ].join(', '),
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
       {/* Interactive Area (Flex Stack) */}
       <div className="relative w-full max-w-5xl flex flex-col items-center justify-center mt-4 z-10">
 
