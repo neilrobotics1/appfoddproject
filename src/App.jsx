@@ -916,22 +916,33 @@ function AudienceSection() {
     const spotlight = spotlightARef.current;
     if (!section || !canvas || !spotlight) return;
 
-    const DOT_SPACING = 26;
-    const DOT_RADIUS = 1.5;
-    // Pure white at low opacity — soft white dots on #b8fb3c green
-    const DOT_COLOR = 'rgba(231, 255, 198, 0.9)';
+    const DOT_SPACING = 13;
+    const DOT_BASE_RADIUS = 1.5;
+    const MAGNIFY_RADIUS = 60;   // px around cursor that gets magnified
+    const MAGNIFY_BOOST  = 2.2;  // max extra radius multiplier at cursor center
 
-    const drawDots = () => {
+    // Draw dots: static ombre grid, with slight magnify near cursor
+    const drawDots = (cursorX = -9999, cursorY = -9999) => {
       const W = canvas.width;
       const H = canvas.height;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = DOT_COLOR;
-      // Cloudflare uses a regular grid of filled circles
       for (let x = DOT_SPACING / 2; x < W; x += DOT_SPACING) {
         for (let y = DOT_SPACING / 2; y < H; y += DOT_SPACING) {
+          // Ombre: top→ low opacity, bottom → high opacity (ease-in quad)
+          const t = y / H;
+          const opacity = 0.05 + 0.80 * (t * t);
+
+          // Magnify: boost radius for dots near cursor
+          const dx = x - cursorX;
+          const dy = y - cursorY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const magnifyT = Math.max(0, 1 - dist / MAGNIFY_RADIUS); // 0 far, 1 at cursor
+          const radius = DOT_BASE_RADIUS + (MAGNIFY_BOOST - 1) * DOT_BASE_RADIUS * magnifyT * magnifyT;
+
+          ctx.fillStyle = `rgba(231, 255, 198, ${opacity})`;
           ctx.beginPath();
-          ctx.arc(x, y, DOT_RADIUS, 0, Math.PI * 2);
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -941,7 +952,7 @@ function AudienceSection() {
       const rect = section.getBoundingClientRect();
       canvas.width = rect.width;
       canvas.height = rect.height;
-      drawDots();
+      drawDots(); // draw static on resize (no cursor)
     };
 
     resizeCanvas();
@@ -950,19 +961,19 @@ function AudienceSection() {
 
     const lerp = (a, b, t) => a + (b - a) * t;
 
-    // Animate: smooth cursor lerp + breathing scale on canvas
-    let tick = 0;
+    // Track raw pixel cursor position inside section for magnify
+    const cursorPxRef = { x: -9999, y: -9999 };
+
     const animate = () => {
-      tick++;
       const cur = cursorARef.current;
       const tgt = targetARef.current;
       const nx = lerp(cur.x, tgt.x, 0.055);
       const ny = lerp(cur.y, tgt.y, 0.055);
       cursorARef.current = { x: nx, y: ny };
 
-      // Breathing scale on canvas: 1 → 1.06 over ~6s
-      const breathe = 1 + 0.03 * Math.sin(tick * 0.008);
-      canvas.style.transform = `scale(${breathe})`;
+      // Redraw dots with magnify at cursor pixel position (no scale/breathing)
+      canvas.style.transform = 'none';
+      drawDots(cursorPxRef.x, cursorPxRef.y);
 
       // Move spotlight to cursor
       spotlight.style.background = [
@@ -978,12 +989,18 @@ function AudienceSection() {
 
     const onMouseMove = (e) => {
       const rect = section.getBoundingClientRect();
+      const rx = e.clientX - rect.left;
+      const ry = e.clientY - rect.top;
+      cursorPxRef.x = rx;
+      cursorPxRef.y = ry;
       targetARef.current = {
-        x: (e.clientX - rect.left) / rect.width,
-        y: (e.clientY - rect.top) / rect.height,
+        x: rx / rect.width,
+        y: ry / rect.height,
       };
     };
     const onMouseLeave = () => {
+      cursorPxRef.x = -9999;
+      cursorPxRef.y = -9999;
       targetARef.current = { x: 0.5, y: 0.5 };
     };
 
